@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>security: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/tuxle-org/lib/tuxle/security/password.go (100.0%)</option>
+				
+				<option value="file1">github.com/tuxle-org/lib/tuxle/security/password_encrypt.go (100.0%)</option>
+				
+				<option value="file2">github.com/tuxle-org/lib/tuxle/user.go (87.5%)</option>
+				
+				<option value="file3">github.com/tuxle-org/lib/tuxle/user_serializer.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package security
+
+import (
+        "github.com/tuxle-org/lib/internal"
+)
+
+const SALT_LENGTH = 8
+const HASH_LENGTH = 64
+
+type Password [SALT_LENGTH + HASH_LENGTH]byte
+
+func (password Password) String() string <span class="cov8" title="1">{
+        return string(password[:])
+}</span>
+
+func (password *Password) Write(writer *internal.Writer) error <span class="cov8" title="1">{
+        return internal.AnyErr(
+                writer.Write("password:salt", password[:SALT_LENGTH]),
+                writer.Write("password:hash", password[SALT_LENGTH:]),
+        )
+}</span>
+
+func (password *Password) Read(reader *internal.Reader) error <span class="cov8" title="1">{
+        return internal.AnyErr(
+                reader.Read("password:salt", password[:SALT_LENGTH]),
+                reader.Read("password:hash", password[SALT_LENGTH:]),
+        )
+}</span>
+
+func (password Password) MatchesWith(str string) bool <span class="cov8" title="1">{
+        var passwd Password
+        copy(passwd[:SALT_LENGTH], password[:SALT_LENGTH])
+        copy(passwd[SALT_LENGTH:], encodeString(string(password[:SALT_LENGTH])+str))
+
+        return password == passwd
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package security
+
+import (
+        "crypto/sha512"
+        "encoding/hex"
+        "fmt"
+        "strings"
+        "time"
+)
+
+func encodeString(str string) string <span class="cov8" title="1">{
+        var sha512Hasher = sha512.New()
+        sha512Hasher.Write([]byte(str))
+        return hex.EncodeToString(sha512Hasher.Sum(nil))
+}</span>
+
+func RandomHash(length int) string <span class="cov8" title="1">{
+        if length &gt; 128 </span><span class="cov8" title="1">{
+                numCalls := (length + 127) / 128 // Ceiling of (length / 128)
+
+                var builder strings.Builder
+                for i := range numCalls </span><span class="cov8" title="1">{
+                        builder.WriteString(encodeString(fmt.Sprint(time.Now().UnixNano() + int64(i))))
+                }</span>
+
+                <span class="cov8" title="1">return builder.String()[:length]</span>
+        }
+
+        <span class="cov8" title="1">return encodeString(fmt.Sprint(time.Now().UnixNano()))[0:length]</span>
+}
+
+func GenPassword(password string) Password <span class="cov8" title="1">{
+        salt := RandomHash(SALT_LENGTH)
+        hash := encodeString(salt + password)
+
+        var passwd Password
+        copy(passwd[:SALT_LENGTH], salt)
+        copy(passwd[SALT_LENGTH:], hash)
+        return passwd
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package tuxle
+
+import (
+        "fmt"
+        "strings"
+
+        "github.com/tuxle-org/lib/tuxle/security"
+)
+
+const USER_BYTE_SIZE = 16 + (32 * 4) + 64 + 256 + (security.SALT_LENGTH + security.HASH_LENGTH)
+
+type User struct {
+        Id          [16]byte
+        Name        [32]rune
+        PictureId   [64]byte
+        Description *[256]byte
+        Password    security.Password
+}
+
+func NewUser() *User <span class="cov8" title="1">{
+        return &amp;User{
+                Id:          [16]byte{},
+                Name:        [32]rune{},
+                PictureId:   [64]byte{},
+                Description: nil,
+                Password:    security.Password{},
+        }
+}</span>
+
+// Ensures no pointers are equal to nil by setting them to empty arrays.
+func (user *User) FillNilValues() *User <span class="cov8" title="1">{
+        if user.Description == nil </span><span class="cov8" title="1">{
+                user.Description = &amp;[256]byte{}
+        }</span>
+
+        <span class="cov8" title="1">return user</span>
+}
+
+// WARN: NOT TESTED, since its contents shouldn't be relied on by any program.
+// Use it only to display data.
+func (user *User) String() string <span class="cov8" title="1">{
+        var description [256]byte
+        if user.Description != nil </span><span class="cov0" title="0">{
+                description = *user.Description
+        }</span>
+        <span class="cov8" title="1">return strings.ReplaceAll(fmt.Sprintf(
+                "Id=%s\nName=%s\nPictureName=%s\nDescription=%s\nPassword=%s",
+                user.Id,
+                string(user.Name[:]),
+                string(user.PictureId[:]),
+                description,
+                user.Password.String(),
+        ), "\x00", ".")</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package tuxle
+
+import "github.com/tuxle-org/lib/internal"
+
+func (user *User) Size() int64 <span class="cov8" title="1">{
+        return USER_BYTE_SIZE
+}</span>
+
+func (user *User) Serialize(writer *internal.Writer) error <span class="cov8" title="1">{
+        user.FillNilValues()
+
+        return internal.AnyErr(
+                writer.Write("user.Id", user.Id[:]),
+                writer.WriteRunes("user.Name", user.Name[:]),
+                writer.Write("user.PictureId", user.PictureId[:]),
+                writer.Write("user.Description", user.Description[:]),
+                user.Password.Write(writer),
+        )
+}</span>
+
+func (user *User) Deserialize(reader *internal.Reader) error <span class="cov8" title="1">{
+        user.FillNilValues()
+
+        return internal.AnyErr(
+                reader.Read("user.Id", user.Id[:]),
+                reader.ReadRunes("user.Name", user.Name[:]),
+                reader.Read("user.PictureId", user.PictureId[:]),
+                reader.Read("user.Description", user.Description[:]),
+                user.Password.Read(reader),
+        )
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
