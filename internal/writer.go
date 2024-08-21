@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"encoding/binary"
 	"fmt"
 	"io"
 )
@@ -22,4 +23,21 @@ func (writer *Writer) Write(field string, data []byte) error {
 	}
 
 	return nil
+}
+
+func (writer *Writer) WriteRunes(field string, data []rune) error {
+	for _, char := range data {
+		if err := binary.Write(writer.writer, binary.LittleEndian, char); err != nil {
+			return fmt.Errorf("Error writing: %q: %w", field, err)
+		}
+	}
+
+	return nil
+}
+
+func (writer *Writer) WriteString(field string, str string, length int) error {
+	data := make([]byte, length)
+	copy(data[:], []byte(str))
+
+	return writer.Write(field, data)
 }
