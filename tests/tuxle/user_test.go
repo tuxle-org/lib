@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/tuxle-org/lib/internal"
+	"github.com/tuxle-org/lib/stream"
 	"github.com/tuxle-org/lib/tuxle"
 	"github.com/tuxle-org/lib/tuxle/security"
 	"gotest.tools/assert"
@@ -32,7 +33,7 @@ func mockUserBytes() string {
 
 func TestUserSerialize(test *testing.T) {
 	var buffer bytes.Buffer
-	writer := internal.NewWriter(&buffer)
+	writer := stream.NewWriter(&buffer)
 
 	user := mockUser()
 	err := user.Serialize(writer)
@@ -50,7 +51,7 @@ func TestUserSerialize(test *testing.T) {
 
 func TestUserDeserialize(test *testing.T) {
 	var buffer bytes.Buffer
-	writer := internal.NewWriter(&buffer)
+	writer := stream.NewWriter(&buffer)
 
 	user := mockUser()
 	err := user.Serialize(writer)
@@ -59,7 +60,7 @@ func TestUserDeserialize(test *testing.T) {
 	}
 
 	user = tuxle.NewUser()
-	err = user.Deserialize(internal.NewReader(&buffer))
+	err = user.Deserialize(stream.NewReader(&buffer))
 	if err != nil {
 		test.Fatal(err)
 	}

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tuxle-org/lib/internal"
+	"github.com/tuxle-org/lib/stream"
 	"github.com/tuxle-org/lib/tuxle/security"
 	"gotest.tools/assert"
 )
@@ -44,7 +44,7 @@ func TestPasswordWrite(test *testing.T) {
 	password := security.GenPassword(str)
 
 	var buffer bytes.Buffer
-	err := password.Write(internal.NewWriter(&buffer))
+	err := password.Write(stream.NewWriter(&buffer))
 	if err != nil {
 		test.Fatal(err)
 	}
@@ -60,7 +60,7 @@ func TestPasswordRead(test *testing.T) {
 	buffer.WriteString(password.String())
 
 	passwd := security.Password{}
-	err := passwd.Read(internal.NewReader(&buffer))
+	err := passwd.Read(stream.NewReader(&buffer))
 	if err != nil {
 		test.Fatal(err)
 	}
@@ -72,7 +72,7 @@ func TestPasswordErrorHandling(test *testing.T) {
 	var buffer [20]byte
 
 	password := security.Password{}
-	err := password.Read(internal.NewReader(bytes.NewReader(buffer[:])))
+	err := password.Read(stream.NewReader(bytes.NewReader(buffer[:])))
 	if err == nil {
 		test.Fatalf("Reading should fail, because there's not enough space!")
 	}

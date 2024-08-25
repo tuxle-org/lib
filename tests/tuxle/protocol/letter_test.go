@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/tuxle-org/lib/internal"
+	"github.com/tuxle-org/lib/stream"
 	"github.com/tuxle-org/lib/tuxle/field"
 	"github.com/tuxle-org/lib/tuxle/protocol"
 	"gotest.tools/assert"
@@ -24,7 +25,7 @@ func mockLetter() *protocol.Letter {
 func mockLetterBuffer(test *testing.T) *bytes.Buffer {
 	var buffer bytes.Buffer
 
-	writer := internal.NewWriter(&buffer)
+	writer := stream.NewWriter(&buffer)
 	err := internal.AnyErr(
 		writer.Write("Letter", []byte("TEST example\n")),
 		writer.WriteUint32("Parameters.@len", 1),
@@ -40,7 +41,7 @@ func mockLetterBuffer(test *testing.T) *bytes.Buffer {
 func TestLetterWrite(test *testing.T) {
 	var buffer bytes.Buffer
 
-	err := mockLetter().Write(internal.NewWriter(&buffer))
+	err := mockLetter().Write(stream.NewWriter(&buffer))
 	if err != nil {
 		test.Fatal(err)
 	}
@@ -50,7 +51,7 @@ func TestLetterWrite(test *testing.T) {
 
 func TestLetterRead(test *testing.T) {
 	letter := protocol.NewLetter()
-	err := letter.Read(internal.NewReader(mockLetterBuffer(test)))
+	err := letter.Read(stream.NewReader(mockLetterBuffer(test)))
 	if err != nil {
 		test.Fatal(err)
 	}

@@ -1,12 +1,15 @@
 package tuxle
 
-import "github.com/tuxle-org/lib/internal"
+import (
+	"github.com/tuxle-org/lib/internal"
+	"github.com/tuxle-org/lib/stream"
+)
 
 func (user *User) Size() int64 {
 	return USER_BYTE_SIZE
 }
 
-func (user *User) Serialize(writer *internal.Writer) error {
+func (user *User) Serialize(writer *stream.Writer) error {
 	user.FillNilValues()
 
 	return internal.AnyErr(
@@ -18,7 +21,7 @@ func (user *User) Serialize(writer *internal.Writer) error {
 	)
 }
 
-func (user *User) Deserialize(reader *internal.Reader) error {
+func (user *User) Deserialize(reader *stream.Reader) error {
 	user.FillNilValues()
 
 	return internal.AnyErr(

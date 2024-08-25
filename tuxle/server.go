@@ -1,7 +1,7 @@
 package tuxle
 
 import (
-	"github.com/tuxle-org/lib/internal"
+	"github.com/tuxle-org/lib/stream"
 	"github.com/tuxle-org/lib/tuxle/field"
 )
 
@@ -19,7 +19,7 @@ func NewServer() *Server {
 	}
 }
 
-func (server *Server) Read(reader *internal.Reader) error {
+func (server *Server) Read(reader *stream.Reader) error {
 	params := field.Parameters{}
 	err := params.ReadUntilEOF(reader)
 	if err != nil {
@@ -42,7 +42,7 @@ func (server *Server) Read(reader *internal.Reader) error {
 	return nil
 }
 
-func (server *Server) Write(writer *internal.Writer) error {
+func (server *Server) Write(writer *stream.Writer) error {
 	return field.Parameters{
 		"Name":        server.Name,
 		"Description": server.Description,

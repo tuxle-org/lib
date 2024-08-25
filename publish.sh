@@ -6,5 +6,5 @@ if [ -z "$1" ]
     exit 1
 fi
 
-git tag add $1
+git tag $1
 git push origin $1

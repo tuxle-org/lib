@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/tuxle-org/lib/internal"
+	"github.com/tuxle-org/lib/stream"
 	"github.com/tuxle-org/lib/tuxle/field"
 )
 
@@ -25,7 +26,7 @@ func NewLetter() *Letter {
 	}
 }
 
-func (letter *Letter) Write(writer *internal.Writer) error {
+func (letter *Letter) Write(writer *stream.Writer) error {
 	_, err := fmt.Fprintf(writer.IO, "%s %s\n", letter.Type, letter.Endpoint)
 	if err != nil {
 		return err
@@ -43,7 +44,7 @@ func (letter *Letter) Write(writer *internal.Writer) error {
 	return err
 }
 
-func (letter *Letter) Read(reader *internal.Reader) (err error) {
+func (letter *Letter) Read(reader *stream.Reader) (err error) {
 	letter.Type, err = reader.ReadString("Letter.Type", ' ')
 	if err != nil {
 		return err

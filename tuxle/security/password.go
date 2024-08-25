@@ -2,6 +2,7 @@ package security
 
 import (
 	"github.com/tuxle-org/lib/internal"
+	"github.com/tuxle-org/lib/stream"
 )
 
 const SALT_LENGTH = 8
@@ -13,14 +14,14 @@ func (password Password) String() string {
 	return string(password[:])
 }
 
-func (password *Password) Write(writer *internal.Writer) error {
+func (password *Password) Write(writer *stream.Writer) error {
 	return internal.AnyErr(
 		writer.Write("password:salt", password[:SALT_LENGTH]),
 		writer.Write("password:hash", password[SALT_LENGTH:]),
 	)
 }
 
-func (password *Password) Read(reader *internal.Reader) error {
+func (password *Password) Read(reader *stream.Reader) error {
 	return internal.AnyErr(
 		reader.Read("password:salt", password[:SALT_LENGTH]),
 		reader.Read("password:hash", password[SALT_LENGTH:]),

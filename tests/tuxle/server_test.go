@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/tuxle-org/lib/internal"
+	"github.com/tuxle-org/lib/stream"
 	"github.com/tuxle-org/lib/tuxle"
 	"github.com/tuxle-org/lib/tuxle/field"
 	"gotest.tools/assert"
@@ -24,7 +24,7 @@ func mockServerBuffer(test *testing.T) *bytes.Buffer {
 		"Name":        "Test",
 		"Description": "# Hello world!\nWelcome to my server.",
 		"PictureId":   "",
-	}.Write(internal.NewWriter(&buffer))
+	}.Write(stream.NewWriter(&buffer))
 	if err != nil {
 		test.Fatal(err)
 	}
@@ -45,7 +45,7 @@ func mockFullServerBuffer(test *testing.T) *bytes.Buffer {
 		"Name":        "Test",
 		"Description": "# Hello world!\nWelcome to my server.",
 		"PictureId":   "YTEyamszbmtzamJhbjAxMm5rbHNqbmFvcDFuMjMwbmFzCYTEyamszbmtzamJhbjA",
-	}.Write(internal.NewWriter(&buffer))
+	}.Write(stream.NewWriter(&buffer))
 	if err != nil {
 		test.Fatal(err)
 	}
@@ -55,7 +55,7 @@ func mockFullServerBuffer(test *testing.T) *bytes.Buffer {
 
 func TestServerWrite(test *testing.T) {
 	var buffer bytes.Buffer
-	err := mockServer().Write(internal.NewWriter(&buffer))
+	err := mockServer().Write(stream.NewWriter(&buffer))
 	if err != nil {
 		test.Fatal(err)
 	}
@@ -65,7 +65,7 @@ func TestServerWrite(test *testing.T) {
 
 func TestFullServerWrite(test *testing.T) {
 	var buffer bytes.Buffer
-	err := mockFullServer().Write(internal.NewWriter(&buffer))
+	err := mockFullServer().Write(stream.NewWriter(&buffer))
 	if err != nil {
 		test.Fatal(err)
 	}
@@ -75,7 +75,7 @@ func TestFullServerWrite(test *testing.T) {
 
 func TestServerRead(test *testing.T) {
 	server := tuxle.NewServer()
-	err := server.Read(internal.NewReader(mockServerBuffer(test)))
+	err := server.Read(stream.NewReader(mockServerBuffer(test)))
 	if err != nil {
 		test.Fatal(err)
 	}
@@ -85,7 +85,7 @@ func TestServerRead(test *testing.T) {
 
 func TestFullServerRead(test *testing.T) {
 	server := tuxle.NewServer()
-	err := server.Read(internal.NewReader(mockFullServerBuffer(test)))
+	err := server.Read(stream.NewReader(mockFullServerBuffer(test)))
 	if err != nil {
 		test.Fatal(err)
 	}

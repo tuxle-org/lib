@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/tuxle-org/lib/internal"
+	"github.com/tuxle-org/lib/stream"
 	"github.com/tuxle-org/lib/tuxle/field"
 	"gotest.tools/assert"
 )
@@ -21,7 +22,7 @@ func mockParameters() field.Parameters {
 func mockParametersBuffer(test *testing.T) *bytes.Buffer {
 	var buffer bytes.Buffer
 
-	writer := internal.NewWriter(&buffer)
+	writer := stream.NewWriter(&buffer)
 	err := internal.AnyErr(
 		writer.Write(
 			"Parameters",
@@ -40,7 +41,7 @@ func mockParametersBuffer(test *testing.T) *bytes.Buffer {
 func TestParametersWrite(test *testing.T) {
 	var buffer bytes.Buffer
 
-	err := mockParameters().Write(internal.NewWriter(&buffer))
+	err := mockParameters().Write(stream.NewWriter(&buffer))
 	if err != nil {
 		test.Fatal(err)
 	}
@@ -50,7 +51,7 @@ func TestParametersWrite(test *testing.T) {
 
 func TestParametersRead(test *testing.T) {
 	params := field.Parameters{}
-	err := params.ReadUntilEOF(internal.NewReader(mockParametersBuffer(test)))
+	err := params.ReadUntilEOF(stream.NewReader(mockParametersBuffer(test)))
 	if err != nil {
 		test.Fatal(err)
 	}

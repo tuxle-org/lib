@@ -7,7 +7,7 @@ import (
 	"math"
 	"sort"
 
-	"github.com/tuxle-org/lib/internal"
+	"github.com/tuxle-org/lib/stream"
 	"golang.org/x/exp/maps"
 )
 
@@ -19,7 +19,7 @@ func (params Parameters) Keys() (keys []string) {
 	return
 }
 
-func (params Parameters) Write(writer *internal.Writer) error {
+func (params Parameters) Write(writer *stream.Writer) error {
 	var err error
 	for _, key := range params.Keys() {
 		_, err = fmt.Fprintf(writer.IO, "%s=%s\x00", key, params[key])
@@ -31,7 +31,7 @@ func (params Parameters) Write(writer *internal.Writer) error {
 	return nil
 }
 
-func (params Parameters) Read(reader *internal.Reader, count uint32) error {
+func (params Parameters) Read(reader *stream.Reader, count uint32) error {
 	for range count {
 		key, err := reader.ReadString("@parameters:Key", '=')
 		if err != nil {
@@ -49,7 +49,7 @@ func (params Parameters) Read(reader *internal.Reader, count uint32) error {
 	return nil
 }
 
-func (params Parameters) ReadUntilEOF(reader *internal.Reader) error {
+func (params Parameters) ReadUntilEOF(reader *stream.Reader) error {
 	err := params.Read(reader, math.MaxInt32)
 	if errors.Is(err, io.EOF) {
 		return nil
