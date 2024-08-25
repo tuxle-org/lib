@@ -41,3 +41,9 @@ func (writer *Writer) WriteString(field string, str string, length int) error {
 
 	return writer.Write(field, data)
 }
+
+func (writer *Writer) WriteUint32(field string, number uint32) error {
+	var buffer = make([]byte, 4)
+	binary.BigEndian.PutUint32(buffer, number)
+	return writer.Write(field, buffer)
+}
