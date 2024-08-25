@@ -27,7 +27,7 @@ func (writer *Writer) Write(field string, data []byte) error {
 
 func (writer *Writer) WriteRunes(field string, data []rune) error {
 	for _, char := range data {
-		if err := binary.Write(writer.writer, binary.LittleEndian, char); err != nil {
+		if err := binary.Write(writer.IO, binary.LittleEndian, char); err != nil {
 			return fmt.Errorf("Error writing: %q: %w", field, err)
 		}
 	}
