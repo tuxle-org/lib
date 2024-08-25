@@ -4,20 +4,21 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"strings"
 )
 
 type Reader struct {
-	reader io.Reader
+	IO io.Reader
 }
 
 func NewReader(reader io.Reader) *Reader {
 	return &Reader{
-		reader: reader,
+		IO: reader,
 	}
 }
 
 func (reader *Reader) Read(field string, data []byte) error {
-	_, err := io.ReadFull(reader.reader, data)
+	_, err := io.ReadFull(reader.IO, data)
 	if err != nil {
 		return fmt.Errorf("Error reading: %q: %w", field, err)
 	}

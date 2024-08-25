@@ -7,17 +7,17 @@ import (
 )
 
 type Writer struct {
-	writer io.Writer
+	IO io.Writer
 }
 
 func NewWriter(writer io.Writer) *Writer {
 	return &Writer{
-		writer: writer,
+		IO: writer,
 	}
 }
 
 func (writer *Writer) Write(field string, data []byte) error {
-	_, err := writer.writer.Write(data)
+	_, err := writer.IO.Write(data)
 	if err != nil {
 		return fmt.Errorf("Error writing: %q: %w", field, err)
 	}
