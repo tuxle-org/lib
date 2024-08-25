@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>security: Go Coverage Report</title>
+		<title>field: Go Coverage Report</title>
 		<style>
 			body {
 				background: black;
@@ -55,13 +55,23 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/tuxle-org/lib/tuxle/security/password.go (100.0%)</option>
+				<option value="file0">github.com/tuxle-org/lib/tuxle/field/parameters.go (90.3%)</option>
 				
-				<option value="file1">github.com/tuxle-org/lib/tuxle/security/password_encrypt.go (100.0%)</option>
+				<option value="file1">github.com/tuxle-org/lib/tuxle/field/parameters_validator.go (100.0%)</option>
 				
-				<option value="file2">github.com/tuxle-org/lib/tuxle/user.go (87.5%)</option>
+				<option value="file2">github.com/tuxle-org/lib/tuxle/protocol/letter.go (73.9%)</option>
 				
-				<option value="file3">github.com/tuxle-org/lib/tuxle/user_serializer.go (100.0%)</option>
+				<option value="file3">github.com/tuxle-org/lib/tuxle/protocol/letter_presets.go (0.0%)</option>
+				
+				<option value="file4">github.com/tuxle-org/lib/tuxle/security/password.go (100.0%)</option>
+				
+				<option value="file5">github.com/tuxle-org/lib/tuxle/security/password_encrypt.go (100.0%)</option>
+				
+				<option value="file6">github.com/tuxle-org/lib/tuxle/server.go (84.6%)</option>
+				
+				<option value="file7">github.com/tuxle-org/lib/tuxle/user.go (87.5%)</option>
+				
+				<option value="file8">github.com/tuxle-org/lib/tuxle/user_serializer.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -75,7 +85,223 @@
 		</div>
 		<div id="content">
 		
-		<pre class="file" id="file0" style="display: none">package security
+		<pre class="file" id="file0" style="display: none">package field
+
+import (
+        "errors"
+        "fmt"
+        "io"
+        "math"
+        "sort"
+
+        "github.com/tuxle-org/lib/internal"
+        "golang.org/x/exp/maps"
+)
+
+type Parameters map[string]string
+
+func (params Parameters) Keys() (keys []string) <span class="cov8" title="1">{
+        keys = maps.Keys(params)
+        sort.Strings(keys)
+        return
+}</span>
+
+func (params Parameters) Write(writer *internal.Writer) error <span class="cov8" title="1">{
+        var err error
+        for _, key := range params.Keys() </span><span class="cov8" title="1">{
+                _, err = fmt.Fprintf(writer.IO, "%s=%s\x00", key, params[key])
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        }
+
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (params Parameters) Read(reader *internal.Reader, count uint32) error <span class="cov8" title="1">{
+        for range count </span><span class="cov8" title="1">{
+                key, err := reader.ReadString("@parameters:Key", '=')
+                if err != nil </span><span class="cov8" title="1">{
+                        return err
+                }</span>
+
+                <span class="cov8" title="1">value, err := reader.ReadString("@parameters:Value", '\x00')
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov8" title="1">params[key] = value</span>
+        }
+
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (params Parameters) ReadUntilEOF(reader *internal.Reader) error <span class="cov8" title="1">{
+        err := params.Read(reader, math.MaxInt32)
+        if errors.Is(err, io.EOF) </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+        <span class="cov0" title="0">return err</span>
+}
+
+// Ensures all the fields are:
+//
+// 1. Defined.
+//
+// 2. Pass the Validator function without any errors.
+//
+// Returns the combined error of all fields that failed the check.
+// Use `field.Exist()` Validator to only check that the field is present.
+func (params Parameters) Validate(fields map[string]Validator) error <span class="cov8" title="1">{
+        var errs []error
+
+        for key, validator := range fields </span><span class="cov8" title="1">{
+                value, ok := params[key]
+                if !ok </span><span class="cov8" title="1">{
+                        errs = append(errs, fmt.Errorf("Field %q doesn't exist.", key))
+                        continue</span>
+                }
+                <span class="cov8" title="1">if err := validator(value); err != nil </span><span class="cov8" title="1">{
+                        errs = append(errs, fmt.Errorf("Field %q validation failed: %w", key, err))
+                }</span>
+        }
+
+        <span class="cov8" title="1">return errors.Join(errs...)</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package field
+
+import (
+        "errors"
+        "fmt"
+)
+
+type Validator func(string) error
+
+func Exists(_ string) error <span class="cov8" title="1">{
+        return nil
+}</span>
+
+func HasLength(length int) Validator <span class="cov8" title="1">{
+        return func(value string) error </span><span class="cov8" title="1">{
+                if len(value) != length </span><span class="cov8" title="1">{
+                        return fmt.Errorf("Field must be `%d` characters long, not `%d`", length, len(value))
+                }</span>
+
+                <span class="cov8" title="1">return nil</span>
+        }
+}
+
+func NotEmpty(value string) error <span class="cov8" title="1">{
+        if len(value) == 0 </span><span class="cov8" title="1">{
+                return errors.New("Field cannot be empty")
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package protocol
+
+import (
+        "fmt"
+
+        "github.com/tuxle-org/lib/internal"
+        "github.com/tuxle-org/lib/tuxle/field"
+)
+
+// A letter is used to communicate between programs.
+type Letter struct {
+        Type       string
+        Endpoint   string
+        Parameters field.Parameters
+        Body       string
+}
+
+// Get an empty letter
+func NewLetter() *Letter <span class="cov8" title="1">{
+        return &amp;Letter{
+                Type:       "",
+                Endpoint:   "",
+                Parameters: field.Parameters{},
+                Body:       "",
+        }
+}</span>
+
+func (letter *Letter) Write(writer *internal.Writer) error <span class="cov8" title="1">{
+        _, err := fmt.Fprintf(writer.IO, "%s %s\n", letter.Type, letter.Endpoint)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">err = internal.AnyErr(
+                writer.WriteUint32("Letter.Parameters.@len", uint32(len(letter.Parameters))),
+                letter.Parameters.Write(writer),
+        )
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">_, err = fmt.Fprintf(writer.IO, "%s\r", letter.Body)
+        return err</span>
+}
+
+func (letter *Letter) Read(reader *internal.Reader) (err error) <span class="cov8" title="1">{
+        letter.Type, err = reader.ReadString("Letter.Type", ' ')
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">letter.Endpoint, err = reader.ReadString("Letter.Endpoint", '\n')
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">count, err := reader.ReadUint32("Letter.Parameters.@len")
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">err = letter.Parameters.Read(reader, count)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">letter.Body, err = reader.ReadString("Letter.Body", '\r')
+
+        return err</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package protocol
+
+import (
+        "fmt"
+
+        "github.com/tuxle-org/lib/tuxle/field"
+)
+
+func NewErrorLetter(name string, body string, args ...any) *Letter <span class="cov0" title="0">{
+        return &amp;Letter{
+                Type:       "ERROR",
+                Endpoint:   name,
+                Parameters: field.Parameters{},
+                Body:       fmt.Sprintf(body, args...),
+        }
+}</span>
+
+func NewOkayLetter(name string, body string, args ...any) *Letter <span class="cov0" title="0">{
+        return &amp;Letter{
+                Type:       "OKAY",
+                Endpoint:   name,
+                Parameters: field.Parameters{},
+                Body:       fmt.Sprintf(body, args...),
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package security
 
 import (
         "github.com/tuxle-org/lib/internal"
@@ -113,7 +339,7 @@ func (password Password) MatchesWith(str string) bool <span class="cov8" title="
 }</span>
 </pre>
 		
-		<pre class="file" id="file1" style="display: none">package security
+		<pre class="file" id="file5" style="display: none">package security
 
 import (
         "crypto/sha512"
@@ -155,7 +381,60 @@ func GenPassword(password string) Password <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file2" style="display: none">package tuxle
+		<pre class="file" id="file6" style="display: none">package tuxle
+
+import (
+        "github.com/tuxle-org/lib/internal"
+        "github.com/tuxle-org/lib/tuxle/field"
+)
+
+type Server struct {
+        Name        string
+        Description string
+        PictureId   string
+}
+
+func NewServer() *Server <span class="cov8" title="1">{
+        return &amp;Server{
+                Name:        "",
+                Description: "",
+                PictureId:   "",
+        }
+}</span>
+
+func (server *Server) Read(reader *internal.Reader) error <span class="cov8" title="1">{
+        params := field.Parameters{}
+        err := params.ReadUntilEOF(reader)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">err = params.Validate(map[string]field.Validator{
+                "Name":        field.NotEmpty,
+                "Description": field.NotEmpty,
+                "PictureId":   field.Exists,
+        })
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">server.Name = params["Name"]
+        server.Description = params["Description"]
+        server.PictureId = params["PictureId"]
+
+        return nil</span>
+}
+
+func (server *Server) Write(writer *internal.Writer) error <span class="cov8" title="1">{
+        return field.Parameters{
+                "Name":        server.Name,
+                "Description": server.Description,
+                "PictureId":   server.PictureId,
+        }.Write(writer)
+}</span>
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package tuxle
 
 import (
         "fmt"
@@ -211,7 +490,7 @@ func (user *User) String() string <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file3" style="display: none">package tuxle
+		<pre class="file" id="file8" style="display: none">package tuxle
 
 import "github.com/tuxle-org/lib/internal"
 
