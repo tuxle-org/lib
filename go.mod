@@ -1,4 +1,4 @@
-module github.com/tuxle-org/server
+module github.com/tuxle-org/lib
 
 go 1.23.1
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/tuxle-org/server/tuxle/internal"
+	"github.com/tuxle-org/lib/tuxle/internal"
 )
 
 type Letter interface {

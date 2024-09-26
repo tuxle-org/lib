@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/tuxle-org/server/tuxle/protocol"
+	"github.com/tuxle-org/lib/tuxle/protocol"
 	"gotest.tools/assert"
 )
 

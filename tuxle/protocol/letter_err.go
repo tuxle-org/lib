@@ -3,7 +3,7 @@ package protocol
 import (
 	"io"
 
-	"github.com/tuxle-org/server/tuxle/internal"
+	"github.com/tuxle-org/lib/tuxle/internal"
 )
 
 const IdErrLetter = 1
