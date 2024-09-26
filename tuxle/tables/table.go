@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/tuxle-org/lib/tuxle/internal"
+	"github.com/bbfh-dev/alt/alt"
 )
 
 var All = []Table{
@@ -39,7 +39,7 @@ func GetColumnsAsMap(table Table) map[string]string {
 
 func SplitRow(row string) (string, string) {
 	parts := strings.SplitN(row, " ", 2)
-	internal.Assert(len(parts) == 2, "Row must have a space after name")
+	alt.Assert(len(parts) == 2, "Row must have a space after name")
 
 	return strings.Trim(parts[0], `'`), parts[1]
 }

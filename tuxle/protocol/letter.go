@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/tuxle-org/lib/tuxle/internal"
+	"github.com/bbfh-dev/alt/alt"
 )
 
 type Letter interface {
@@ -45,7 +45,7 @@ func WriteLetter(letter Letter, writer io.Writer) error {
 
 	_, err := writer.Write([]byte{id})
 	if err != nil {
-		return internal.PrefixErr("Writing Letter type identifier", err)
+		return alt.PrefixErr("Writing Letter type identifier", err)
 	}
 
 	return letter.Write(writer)
