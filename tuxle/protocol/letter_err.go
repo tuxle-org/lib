@@ -3,7 +3,7 @@ package protocol
 import (
 	"io"
 
-	"github.com/bbfh-dev/alt/alt"
+	"github.com/bbfh-dev/go-tools/tools/terr"
 )
 
 const IdErrLetter = 1
@@ -15,7 +15,7 @@ type ErrLetter struct {
 func (letter ErrLetter) Read(reader io.Reader) (Letter, error) {
 	data, err := io.ReadAll(reader)
 	if err != nil {
-		return nil, alt.PrefixErr("Reading Letter.Body", err)
+		return nil, terr.Prefix("Reading Letter.Body", err)
 	}
 
 	letter.Body = string(data)
@@ -25,5 +25,5 @@ func (letter ErrLetter) Read(reader io.Reader) (Letter, error) {
 
 func (letter ErrLetter) Write(writer io.Writer) error {
 	_, err := writer.Write([]byte(letter.Body))
-	return alt.PrefixErr("Writing Letter.Body", err)
+	return terr.Prefix("Writing Letter.Body", err)
 }

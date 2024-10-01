@@ -1,5 +1,5 @@
-github.com/bbfh-dev/alt v1.0.0 h1:Ze2QpdTTSYLX4vhreUL1j5pabkll/Ab3peWdF6V6faM=
-github.com/bbfh-dev/alt v1.0.0/go.mod h1:nFkSvxvGxBwW9Cs5nnDJlxb7ez4E/U3H8qn4naxnyaU=
+github.com/bbfh-dev/go-tools v1.0.4 h1:8t4kYZMkRAoAQ/vSmvWokSlrJWSszncqzxWbokjAI1A=
+github.com/bbfh-dev/go-tools v1.0.4/go.mod h1:9ASVeFu81W/O+P8ueMsEz89uO215LnAXYF4UVe15OMM=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/bbfh-dev/alt/alt"
+	"github.com/bbfh-dev/go-tools/tools/terr"
 )
 
 type Letter interface {
@@ -45,7 +45,7 @@ func WriteLetter(letter Letter, writer io.Writer) error {
 
 	_, err := writer.Write([]byte{id})
 	if err != nil {
-		return alt.PrefixErr("Writing Letter type identifier", err)
+		return terr.Prefix("Writing Letter type identifier", err)
 	}
 
 	return letter.Write(writer)
