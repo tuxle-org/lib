@@ -3,7 +3,7 @@ module github.com/tuxle-org/lib
 go 1.23.1
 
 require (
-	github.com/bbfh-dev/go-tools v1.0.4
+	github.com/bbfh-dev/go-tools v1.0.6
 	gotest.tools v2.2.0+incompatible
 )
 
