@@ -1,11 +1,11 @@
 package entities
 
 import (
-	"bufio"
-	"io"
+	"time"
 )
 
-type Entity interface {
-	Serialize(io.Writer) error
-	Deserialize(*bufio.Reader) error
+type Entity struct {
+	ID        uint `gorm:"primaryKey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
