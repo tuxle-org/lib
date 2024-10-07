@@ -18,6 +18,7 @@ func TestTypes(test *testing.T) {
 		protocol.IdOkayLetter:   protocol.OkayLetter{},
 		protocol.IdErrLetter:    protocol.ErrLetter{},
 		protocol.IdEntityLetter: protocol.EntityLetter{},
+		protocol.IdGetLetter:    protocol.GetLetter{},
 	}
 
 	for letterIndex, letter := range letters {
@@ -48,6 +49,7 @@ func TestWrite(test *testing.T) {
 		"":                         protocol.OkayLetter{},
 		"Hello World!":             protocol.ErrLetter{Body: "Hello World!"},
 		"\u0001\u0002\u0003\u0004": protocol.EntityLetter{Entity: []byte{1, 2, 3, 4}},
+		"example\x00":              protocol.GetLetter{Query: "example"},
 	}
 
 	for body, letter := range letters {
@@ -62,6 +64,7 @@ func TestRead(test *testing.T) {
 		protocol.OkayLetter{},
 		protocol.ErrLetter{Body: "Hello World!"},
 		protocol.EntityLetter{Entity: []byte{1, 2, 3, 4}},
+		protocol.GetLetter{Query: "example"},
 	}
 
 	for _, letter := range letters {

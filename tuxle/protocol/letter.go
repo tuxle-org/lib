@@ -27,6 +27,8 @@ func LetterType(reader io.Reader) (Letter, error) {
 		out = ErrLetter{}
 	case IdEntityLetter:
 		out = EntityLetter{}
+	case IdGetLetter:
+		out = GetLetter{}
 	}
 
 	if out == nil {
@@ -53,6 +55,8 @@ func WriteLetter(letter Letter, writer io.Writer) error {
 		id = IdErrLetter
 	case EntityLetter:
 		id = IdEntityLetter
+	case GetLetter:
+		id = IdGetLetter
 	}
 
 	_, err := writer.Write([]byte{id})
