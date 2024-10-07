@@ -44,12 +44,13 @@ func writeLetter(test *testing.T, letter protocol.Letter) bytes.Buffer {
 }
 
 func TestWrite(test *testing.T) {
-	var letters = map[protocol.Letter]string{
-		protocol.OkayLetter{}:                    "",
-		protocol.ErrLetter{Body: "Hello World!"}: "Hello World!",
+	var letters = map[string]protocol.Letter{
+		"":                         protocol.OkayLetter{},
+		"Hello World!":             protocol.ErrLetter{Body: "Hello World!"},
+		"\u0001\u0002\u0003\u0004": protocol.EntityLetter{Entity: []byte{1, 2, 3, 4}},
 	}
 
-	for letter, body := range letters {
+	for body, letter := range letters {
 		buffer := writeLetter(test, letter)
 
 		assert.Equal(test, string(buffer.Bytes()[1:]), body)
