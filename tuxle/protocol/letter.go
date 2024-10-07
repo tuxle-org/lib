@@ -12,7 +12,7 @@ type Letter interface {
 	Write(writer io.Writer) error
 }
 
-func ReadLetter(reader io.Reader) (Letter, error) {
+func LetterType(reader io.Reader) (Letter, error) {
 	var binaryType = make([]byte, 1)
 	_, err := reader.Read(binaryType)
 	if err != nil {
@@ -33,6 +33,14 @@ func ReadLetter(reader io.Reader) (Letter, error) {
 		return nil, fmt.Errorf("Unrecognized letter type of index: %d", binaryType[0])
 	}
 
+	return out, nil
+}
+
+func ReadLetter(reader io.Reader) (Letter, error) {
+	out, err := LetterType(reader)
+	if err != nil {
+		return nil, err
+	}
 	return out.Read(reader)
 }
 

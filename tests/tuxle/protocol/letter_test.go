@@ -24,7 +24,7 @@ func TestTypes(test *testing.T) {
 		var buffer bytes.Buffer
 		buffer.Write([]byte{letterIndex})
 
-		recognizedLetter, err := protocol.ReadLetter(&buffer)
+		recognizedLetter, err := protocol.LetterType(&buffer)
 		assert.NilError(test, err)
 
 		if !isType(recognizedLetter, letter) {
