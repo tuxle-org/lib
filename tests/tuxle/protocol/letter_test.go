@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/tuxle-org/lib/tuxle/entities"
 	"github.com/tuxle-org/lib/tuxle/protocol"
 	"gotest.tools/assert"
 )
@@ -82,4 +83,19 @@ func TestRead(test *testing.T) {
 
 		assert.DeepEqual(test, out, letter)
 	}
+}
+
+func TestEntity(test *testing.T) {
+	entity := entities.Server{
+		Name:        "Hello",
+		Description: "World!",
+	}
+
+	letter, err := protocol.EncodeEntity(entity)
+	assert.NilError(test, err)
+	assert.Assert(test, len(letter.Entity) > 0)
+
+	var target entities.Server
+	assert.NilError(test, letter.DecodeEntity(&target))
+	assert.DeepEqual(test, entity, target)
 }
