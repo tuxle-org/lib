@@ -7,7 +7,6 @@ import (
 const IdOkayLetter = 0
 
 type OkayLetter struct {
-	Body string
 }
 
 func (letter OkayLetter) Read(reader io.Reader) (Letter, error) {
