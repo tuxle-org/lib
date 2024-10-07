@@ -15,8 +15,9 @@ func isType(a, b interface{}) bool {
 
 func TestTypes(test *testing.T) {
 	var letters = map[uint8]protocol.Letter{
-		protocol.IdOkayLetter: protocol.OkayLetter{},
-		protocol.IdErrLetter:  protocol.ErrLetter{},
+		protocol.IdOkayLetter:   protocol.OkayLetter{},
+		protocol.IdErrLetter:    protocol.ErrLetter{},
+		protocol.IdEntityLetter: protocol.EntityLetter{},
 	}
 
 	for letterIndex, letter := range letters {
@@ -59,6 +60,7 @@ func TestRead(test *testing.T) {
 	var letters = []protocol.Letter{
 		protocol.OkayLetter{},
 		protocol.ErrLetter{Body: "Hello World!"},
+		protocol.EntityLetter{Entity: []byte{1, 2, 3, 4}},
 	}
 
 	for _, letter := range letters {
@@ -74,6 +76,6 @@ func TestRead(test *testing.T) {
 			)
 		}
 
-		assert.Equal(test, out, letter)
+		assert.DeepEqual(test, out, letter)
 	}
 }
